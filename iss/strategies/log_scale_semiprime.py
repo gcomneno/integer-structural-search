@@ -3,7 +3,18 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction
 
-from iss.models import BoundsReport, SearchAttempt, SearchBudget, StrategyClassification
+from iss.models import (
+    BoundsReport,
+    PayloadBounds,
+    PayloadClassification,
+    PayloadStrategy,
+    PayloadSupportEntry,
+    PayloadVerification,
+    SearchAttempt,
+    SearchBudget,
+    StrategyClassification,
+    StructuralPayload,
+)
 from iss.primes import is_probable_prime, local_prime_candidates
 from iss.roots import integer_nth_root_floor
 from iss.verify import SupportFactor, verify_support
@@ -59,57 +70,61 @@ class LogScaleSemiprimeStrategy:
                 if not verification.product_equals_input or not verification.prime_checks:
                     continue
 
-                payload = {
-                    "kind": "structural_payload",
-                    "input_n": str(n),
-                    "status": "matched",
-                    "strategy": {
-                        "id": self.id,
-                        "family": "log-scale",
-                        "profile": [1, 1],
-                        "scales": [str(low_scale), str(high_scale)],
-                        "parameters": {
+                payload = StructuralPayload(
+                    kind="structural_payload",
+                    input_n=str(n),
+                    status="matched",
+                    strategy=PayloadStrategy(
+                        id=self.id,
+                        family="log-scale",
+                        profile=[1, 1],
+                        scales=[str(low_scale), str(high_scale)],
+                        parameters={
                             "radius": budget.radius,
                             "prime_window": True,
                             "max_denominator": self.max_denominator,
                         },
-                    },
-                    "support": [
-                        {
-                            "base": str(p),
-                            "exp": 1,
-                            "role": "local_factor",
-                            "source": {
+                    ),
+                    support=[
+                        PayloadSupportEntry(
+                            base=str(p),
+                            exp=1,
+                            role="local_factor",
+                            source={
                                 "center": str(center),
                                 "offset": p - center,
                                 "scale": str(low_scale),
                             },
-                        },
-                        {
-                            "base": str(q),
-                            "exp": 1,
-                            "role": "cofactor",
-                            "source": {
+                        ),
+                        PayloadSupportEntry(
+                            base=str(q),
+                            exp=1,
+                            role="cofactor",
+                            source={
                                 "derived_from": f"{n} / {p}",
                                 "scale": str(high_scale),
                             },
-                        },
+                        ),
                     ],
-                    "verification": verification.to_json_dict(),
-                    "bounds": {
-                        "bounded": True,
-                        "factorization_general": False,
-                        "radius": budget.radius,
-                        "max_candidates": budget.max_candidates,
-                        "candidates_tested": candidates_tested,
-                        "max_prime_checks": budget.max_prime_checks,
-                        "prime_checks": prime_checks,
-                    },
-                    "classification": {
-                        "iss_type": self.classification.iss_type,
-                        "factoring_adjacent": False,
-                    },
-                }
+                    verification=PayloadVerification(
+                        product_equals_input=verification.product_equals_input,
+                        prime_checks=verification.prime_checks,
+                        reconstructed_product=verification.reconstructed_product,
+                    ),
+                    bounds=PayloadBounds(
+                        bounded=True,
+                        factorization_general=False,
+                        radius=budget.radius,
+                        max_candidates=budget.max_candidates,
+                        candidates_tested=candidates_tested,
+                        max_prime_checks=budget.max_prime_checks,
+                        prime_checks=prime_checks,
+                    ),
+                    classification=PayloadClassification(
+                        iss_type=self.classification.iss_type,
+                        factoring_adjacent=False,
+                    ),
+                )
 
                 return SearchAttempt(
                     strategy_id=self.id,
