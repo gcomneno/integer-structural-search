@@ -36,14 +36,18 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     engine = build_default_engine()
-    result = engine.search(
-        args.n,
-        budget=SearchBudget(
-            radius=args.radius,
-            max_candidates=args.max_candidates,
-            allow_factoring_adjacent=args.allow_factoring_adjacent,
-        ),
-    )
+
+    try:
+        result = engine.search(
+            args.n,
+            budget=SearchBudget(
+                radius=args.radius,
+                max_candidates=args.max_candidates,
+                allow_factoring_adjacent=args.allow_factoring_adjacent,
+            ),
+        )
+    except ValueError as exc:
+        parser.error(str(exc))
 
     print(json.dumps(result.to_json_dict(), indent=2, sort_keys=True))
     return 0
