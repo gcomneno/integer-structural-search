@@ -37,6 +37,62 @@ class BoundsReport:
 
 
 @dataclass(frozen=True)
+class PayloadStrategy:
+    id: str
+    family: str
+    profile: list[int]
+    scales: list[str]
+    parameters: dict[str, Any]
+
+
+@dataclass(frozen=True)
+class PayloadSupportEntry:
+    base: str
+    exp: int
+    role: str
+    source: dict[str, Any]
+
+
+@dataclass(frozen=True)
+class PayloadVerification:
+    product_equals_input: bool
+    prime_checks: bool
+    reconstructed_product: str
+
+
+@dataclass(frozen=True)
+class PayloadBounds:
+    bounded: bool
+    factorization_general: bool
+    radius: int
+    max_candidates: int
+    candidates_tested: int
+    max_prime_checks: int
+    prime_checks: int
+
+
+@dataclass(frozen=True)
+class PayloadClassification:
+    iss_type: StrategyKind
+    factoring_adjacent: bool
+
+
+@dataclass(frozen=True)
+class StructuralPayload:
+    kind: str
+    input_n: str
+    status: Literal["matched"]
+    strategy: PayloadStrategy
+    support: list[PayloadSupportEntry]
+    verification: PayloadVerification
+    bounds: PayloadBounds
+    classification: PayloadClassification
+
+    def to_json_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
 class SearchAttempt:
     strategy_id: str
     status: Literal["matched", "no_match", "budget_exhausted", "rejected"]
