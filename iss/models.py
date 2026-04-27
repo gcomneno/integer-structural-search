@@ -114,9 +114,20 @@ class SearchResult:
 
     def to_json_dict(self) -> dict[str, Any]:
         data = asdict(self)
+        matched_attempts = [
+            attempt
+            for attempt in self.attempts
+            if attempt.status == "matched"
+        ]
+
         data["summary"] = {
             "matched": self.status == "matched",
             "strategies_attempted": len(self.attempts),
+            "matches_count": len(matched_attempts),
+            "matched_strategy_ids": [
+                attempt.strategy_id
+                for attempt in matched_attempts
+            ],
             "factorization_general": any(
                 attempt.classification.factorization_general
                 for attempt in self.attempts
