@@ -82,3 +82,36 @@ This is intentional.
 Different strategies reaching the same support are useful evidence during structural probing.
 
 Deduplication or best-match selection may be added later as an explicit policy layer.
+
+## CLI strategy selection
+
+By default, the ISS CLI runs all registered default strategies.
+
+Current default strategies:
+
+- `balanced_root_scale_semiprime`
+- `log_scale_semiprime`
+
+Run all default strategies:
+
+    python -m iss.cli 100160063 --radius 2
+
+Run only the balanced root-scale strategy:
+
+    python -m iss.cli 100160063 --radius 2 --strategy balanced_root_scale_semiprime
+
+Run only the log-scale semiprime strategy:
+
+    python -m iss.cli 3465924001 --strategy log_scale_semiprime
+
+The `--strategy` option can be repeated:
+
+    python -m iss.cli 100160063 --radius 2 \
+      --strategy balanced_root_scale_semiprime \
+      --strategy log_scale_semiprime
+
+When no `--strategy` option is provided, all registered default strategies are attempted in registry order.
+
+Strategy selection does not change ISS semantics.
+
+It only limits which declared strategies are run for that invocation.
