@@ -51,6 +51,7 @@ def test_balanced_root_scale_respects_candidate_budget() -> None:
     assert result.status == "no_match"
     assert result.attempts[0].status == "budget_exhausted"
     assert result.attempts[0].reason == "max_candidates_exceeded"
+    assert result.attempts[0].bounds.candidates_tested == 0
 
 
 def test_balanced_root_scale_payload_is_structural_dataclass() -> None:
