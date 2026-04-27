@@ -41,3 +41,44 @@ scale = [1/5, 4/5]
 center = floor(n^(1/5))
 radius = 16
 ```
+
+## Multi-match behavior
+
+ISS may return more than one successful attempt for the same input.
+
+This can happen when different pure structural strategies discover the same valid support.
+
+Example:
+
+```text
+100160063 = 10007 * 10009
+
+With the default strategy set and a small radius, both strategies may match:
+
+balanced_root_scale_semiprime
+log_scale_semiprime
+
+This is expected.
+
+The summary reports this explicitly:
+
+{
+  "summary": {
+    "matched": true,
+    "strategies_attempted": 2,
+    "matches_count": 2,
+    "matched_strategy_ids": [
+      "balanced_root_scale_semiprime",
+      "log_scale_semiprime"
+    ],
+    "factorization_general": false
+  }
+}
+
+ISS currently does not deduplicate equivalent payloads.
+
+This is intentional.
+
+Different strategies reaching the same support are useful evidence during structural probing.
+
+Deduplication or best-match selection may be added later as an explicit policy layer.
