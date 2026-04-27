@@ -53,6 +53,7 @@ def test_log_scale_semiprime_respects_candidate_budget() -> None:
     assert result.status == "no_match"
     assert result.attempts[0].status == "budget_exhausted"
     assert result.attempts[0].reason == "max_candidates_exceeded"
+    assert result.attempts[0].bounds.candidates_tested == 1
 
 
 def test_log_scale_semiprime_returns_structural_payload_dataclass() -> None:
