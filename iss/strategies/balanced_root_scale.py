@@ -34,15 +34,15 @@ class BalancedRootScaleSemiprimeStrategy:
         prime_checks = 0
 
         for p in local_prime_candidates(center, budget.radius):
-            candidates_tested += 1
-            prime_checks += 1
-
-            if candidates_tested > budget.max_candidates:
+            if candidates_tested >= budget.max_candidates:
                 return self._budget_exhausted(
                     budget=budget,
                     candidates_tested=candidates_tested,
                     prime_checks=prime_checks,
                 )
+
+            candidates_tested += 1
+            prime_checks += 1
 
             if n % p != 0:
                 continue
