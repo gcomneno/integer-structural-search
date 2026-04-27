@@ -19,7 +19,7 @@ def test_log_scale_semiprime_finds_unbalanced_case() -> None:
     assert attempt.classification.iss_type == "pure_structural"
     assert attempt.bounds.factorization_general is False
 
-    payload = attempt.payloads[0]
+    payload = attempt.payloads[0].to_json_dict()
     assert payload["strategy"]["id"] == "log_scale_semiprime"
     assert payload["strategy"]["profile"] == [1, 1]
     assert payload["strategy"]["scales"] == ["1/5", "4/5"]
@@ -53,3 +53,18 @@ def test_log_scale_semiprime_respects_candidate_budget() -> None:
     assert result.status == "no_match"
     assert result.attempts[0].status == "budget_exhausted"
     assert result.attempts[0].reason == "max_candidates_exceeded"
+
+
+def test_log_scale_semiprime_returns_structural_payload_dataclass() -> None:
+    n = 3465924001
+    engine = StructuralSearchEngine([LogScaleSemiprimeStrategy(max_denominator=8)])
+
+    result = engine.search(n, budget=SearchBudget(radius=16))
+
+    payload = result.attempts[0].payloads[0]
+
+    assert payload.kind == "structural_payload"
+    assert payload.input_n == "3465924001"
+    assert payload.strategy.id == "log_scale_semiprime"
+    assert payload.support[0].base == "71"
+    assert payload.support[1].base == "48815831"
