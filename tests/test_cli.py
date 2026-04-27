@@ -85,3 +85,58 @@ def test_cli_finds_balanced_root_scale_semiprime_payload() -> None:
     assert payload["support"][0]["base"] == "10007"
     assert payload["support"][1]["base"] == "10009"
     assert payload["verification"]["product_equals_input"] is True
+
+
+def test_cli_can_select_log_scale_strategy_only() -> None:
+    result = run_cli(
+        "3465924001",
+        "--strategy",
+        "log_scale_semiprime",
+    )
+
+    assert result.returncode == 0
+    data = json.loads(result.stdout)
+
+    assert data["status"] == "matched"
+    assert [attempt["strategy_id"] for attempt in data["attempts"]] == [
+        "log_scale_semiprime"
+    ]
+
+
+def test_cli_can_select_balanced_strategy_only() -> None:
+    result = run_cli(
+        str(10007 * 10009),
+        "--radius",
+        "2",
+        "--strategy",
+        "balanced_root_scale_semiprime",
+    )
+
+    assert result.returncode == 0
+    data = json.loads(result.stdout)
+
+    assert data["status"] == "matched"
+    assert [attempt["strategy_id"] for attempt in data["attempts"]] == [
+        "balanced_root_scale_semiprime"
+    ]
+
+
+def test_cli_can_select_multiple_strategies() -> None:
+    result = run_cli(
+        str(10007 * 10009),
+        "--radius",
+        "2",
+        "--strategy",
+        "balanced_root_scale_semiprime",
+        "--strategy",
+        "log_scale_semiprime",
+    )
+
+    assert result.returncode == 0
+    data = json.loads(result.stdout)
+
+    assert data["status"] == "matched"
+    assert [attempt["strategy_id"] for attempt in data["attempts"]] == [
+        "balanced_root_scale_semiprime",
+        "log_scale_semiprime",
+    ]
