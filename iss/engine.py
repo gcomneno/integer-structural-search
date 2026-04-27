@@ -23,6 +23,10 @@ class StructuralSearchEngine:
     def __init__(self, strategies: list[StructuralStrategy]) -> None:
         self._strategies = {strategy.id: strategy for strategy in strategies}
 
+    @classmethod
+    def from_registry(cls, registry) -> StructuralSearchEngine:
+        return cls(registry.all())
+
     def search(
         self,
         n: int,
