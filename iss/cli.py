@@ -26,6 +26,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--radius", type=int, default=16)
     parser.add_argument("--max-candidates", type=int, default=128)
     parser.add_argument(
+        "--strategy",
+        action="append",
+        dest="strategy_ids",
+        help=(
+            "Strategy id to run. Can be passed multiple times. "
+            "Defaults to all registered strategies."
+        ),
+    )
+    parser.add_argument(
         "--allow-factoring-adjacent",
         action="store_true",
         help="Allow explicitly registered factoring-adjacent strategies.",
@@ -47,6 +56,7 @@ def main(argv: list[str] | None = None) -> int:
                 max_candidates=args.max_candidates,
                 allow_factoring_adjacent=args.allow_factoring_adjacent,
             ),
+            strategy_ids=args.strategy_ids,
         )
     except ValueError as exc:
         parser.error(str(exc))
