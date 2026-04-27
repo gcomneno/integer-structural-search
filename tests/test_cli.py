@@ -22,9 +22,17 @@ def test_cli_finds_log_scale_semiprime_payload() -> None:
 
     assert data["status"] == "matched"
     assert data["input_n"] == "3465924001"
-    assert data["attempts"][0]["strategy_id"] == "log_scale_semiprime"
 
-    payload = data["attempts"][0]["payloads"][0]
+    matched_attempts = [
+        attempt
+        for attempt in data["attempts"]
+        if attempt["status"] == "matched"
+    ]
+
+    assert len(matched_attempts) == 1
+    assert matched_attempts[0]["strategy_id"] == "log_scale_semiprime"
+
+    payload = matched_attempts[0]["payloads"][0]
     assert payload["support"][0]["base"] == "71"
     assert payload["support"][1]["base"] == "48815831"
     assert payload["verification"]["product_equals_input"] is True
@@ -49,3 +57,31 @@ def test_cli_rejects_invalid_input_without_traceback() -> None:
     assert "ISS input must be an integer greater than 1" in result.stderr
     assert "Traceback" not in result.stderr
     assert result.stdout == ""
+
+
+def test_cli_finds_balanced_root_scale_semiprime_payload() -> None:
+    result = run_cli(str(10007 * 10009), "--radius", "2")
+
+    assert result.returncode == 0
+    data = json.loads(result.stdout)
+
+    assert data["status"] == "matched"
+
+    matched_attempts = [
+        attempt
+        for attempt in data["attempts"]
+        if attempt["status"] == "matched"
+    ]
+
+    balanced_matches = [
+        attempt
+        for attempt in matched_attempts
+        if attempt["strategy_id"] == "balanced_root_scale_semiprime"
+    ]
+
+    assert len(balanced_matches) == 1
+
+    payload = balanced_matches[0]["payloads"][0]
+    assert payload["support"][0]["base"] == "10007"
+    assert payload["support"][1]["base"] == "10009"
+    assert payload["verification"]["product_equals_input"] is True

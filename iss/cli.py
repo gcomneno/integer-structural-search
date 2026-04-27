@@ -6,11 +6,13 @@ import json
 from iss.engine import StructuralSearchEngine
 from iss.models import SearchBudget
 from iss.registry import StrategyRegistry
+from iss.strategies.balanced_root_scale import BalancedRootScaleSemiprimeStrategy
 from iss.strategies.log_scale_semiprime import LogScaleSemiprimeStrategy
 
 
 def build_default_engine() -> StructuralSearchEngine:
     registry = StrategyRegistry()
+    registry.register(BalancedRootScaleSemiprimeStrategy())
     registry.register(LogScaleSemiprimeStrategy())
     return StructuralSearchEngine.from_registry(registry)
 
