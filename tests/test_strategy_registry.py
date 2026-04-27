@@ -74,3 +74,18 @@ def test_registry_returns_all_strategies() -> None:
     registry.register(zeta)
 
     assert registry.all() == [alpha, zeta]
+
+
+def test_engine_can_be_created_from_registry() -> None:
+    from iss.engine import StructuralSearchEngine
+
+    registry = StrategyRegistry()
+    strategy = DummyStrategy(id="dummy")
+    registry.register(strategy)
+
+    engine = StructuralSearchEngine.from_registry(registry)
+
+    result = engine.search(3465924001)
+
+    assert result.status == "no_match"
+    assert result.attempts[0].strategy_id == "dummy"
