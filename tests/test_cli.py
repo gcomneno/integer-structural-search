@@ -42,8 +42,10 @@ def test_cli_radius_too_small_fails_cleanly() -> None:
     assert data["attempts"][0]["reason"] == "no_dividing_local_prime_found"
 
 
-def test_cli_rejects_invalid_input() -> None:
+def test_cli_rejects_invalid_input_without_traceback() -> None:
     result = run_cli("1")
 
-    assert result.returncode != 0
-    assert "greater than 1" in result.stderr
+    assert result.returncode == 2
+    assert "ISS input must be an integer greater than 1" in result.stderr
+    assert "Traceback" not in result.stderr
+    assert result.stdout == ""
